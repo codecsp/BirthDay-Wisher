@@ -1,17 +1,31 @@
 import pandas as pd
 import datetime
 import smtplib
+from email.message import EmailMessage
 
 GmailID = ''
 gmailPass = ''
 
-def sendEmail(to,sub,msg):
-	print("msg sent to :"+ to)
-	s=smtplib.SMTP('smtp.gmail.com',587)
-	s.starttls()
-	s.login(GmailID,gmailPass)
-	s.sendmail(GmailID,to,f"Subject: {sub}\n\n{msg}")
-	s.quit()
+def sendEmail(to,sub,mesg):
+	try:
+		msg = EmailMessage()
+		msg['Subject'] = sub
+		msg['From'] = GmailID
+		msg['To'] = to
+		msg.set_content(str(mesg))
+
+		s=smtplib.SMTP('smtp.gmail.com',587)
+		s.starttls()
+		s.login(GmailID,gmailPass)
+		# s.sendmail(GmailID,to,message)
+		# print("msg sent to :"+ to)
+		s.send_message(msg)
+		s.quit()
+
+	except SMTPException:
+		print ("Error: unable to send email")
+
+   
 
 if __name__ == '__main__':
 	df = pd.read_excel("data.xlsx")
@@ -42,3 +56,6 @@ if __name__ == '__main__':
 
 	#print(df)
 	df.to_excel('data.xlsx',index=False)
+
+
+
